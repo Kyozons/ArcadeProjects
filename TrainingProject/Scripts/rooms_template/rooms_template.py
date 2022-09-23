@@ -43,6 +43,9 @@ class MyGame(arcade.Window):
         self.player_sprite = None
         self.physics_engine = None
 
+        # Puntaje
+        self.score = 0
+
 
         # Llevar seguimiento de las teclas persionadas
         self.left_pressed = False
@@ -104,6 +107,10 @@ class MyGame(arcade.Window):
         # Dibuja los coins de cada room
         self.rooms[self.current_room].coin_list.draw()
 
+        # Dibuja puntaje
+        output = f"Puntaje: {self.score}"
+        arcade.draw_text(output, SCREEN_WIDTH - 100, SCREEN_HEIGHT - 30, arcade.color.BLACK, 14)
+
         # Dibujar Sprites
         self.player_list.draw()
 
@@ -150,8 +157,15 @@ class MyGame(arcade.Window):
         elif self.right_pressed and not self.left_pressed:
             self.player_sprite.change_x = PLAYER_MOVEMENT_SPEED
 
+
         # Actualizar todos los sprites
         self.physics_engine.update()
+
+        # Colision monedas
+        coins_hit_list = arcade.check_for_collision_with_list(self.player_sprite, self.rooms[self.current_room].coin_list)
+        for coin in coins_hit_list:
+            coin.remove_from_sprite_lists()
+            self.score += 1
 
         # Lógica para saber en qué room estamos y si necesitamos ir a otro room
 

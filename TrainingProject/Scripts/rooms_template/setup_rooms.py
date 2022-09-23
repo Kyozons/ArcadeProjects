@@ -76,7 +76,7 @@ def setup_room_open_right():
     room.wall_list.append(wall)
 
     # --- Cargar monedas ---
-    coin = arcade.Sprite(f"{ROUTE_SPRITES}/{COIN_SPRITE_NAME}", SPRITE_SCALING)
+    coin = arcade.Sprite(f"{ROUTE_SPRITES}/{COIN_SPRITE_NAME}", SPRITE_SCALING / 2)
     coin.center_x = 200
     coin.center_y = 200
     room.coin_list.append(coin)
@@ -419,6 +419,12 @@ def setup_room_open_right_up():
     wall.left = 5 * SPRITE_SIZE
     wall.bottom = 6 * SPRITE_SIZE
     room.wall_list.append(wall)
+
+    # --- Cargar Monedas ---
+    coin = arcade.Sprite(f"{ROUTE_SPRITES}/{COIN_SPRITE_NAME}", SPRITE_SCALING / 2)
+    coin.center_x = 2 * SPRITE_SIZE
+    coin.center_y = 3 * SPRITE_SIZE
+    room.coin_list.append(coin)
 
     # --- Imagen de fondo ---
     room.background = arcade.load_texture(":resources:images/backgrounds/abstract_2.jpg")

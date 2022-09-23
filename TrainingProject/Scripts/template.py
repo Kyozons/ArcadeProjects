@@ -10,6 +10,7 @@ SPRITE_SCALING = 0.5
 ROUTE_SPRITES = "../Assets/Sprites"
 PLAYER_SPRITE_NAME = "character.png"
 WALL_SPRITE_NAME = "box.png"
+COIN_SPRITE_NAME = "coin_01.png"
 
 # --- Parametros del juego ---
 BACKGROUND_COLOR = arcade.color.AMAZON
@@ -38,10 +39,14 @@ class MyGame(arcade.Window):
         # Lista de Sprites
         self.player_list = None
         self.wall_list = None
+        self.coin_list = None
 
         # Preparar al jugador
         self.player_sprite = None
         self.physics_engine = None
+
+        # Variable para manejar el puntaje
+        self.score = 0
 
         # Se usan para manejar el scroll de camara
         self.view_bottom = 0
@@ -65,6 +70,7 @@ class MyGame(arcade.Window):
         # Lista de Sprite
         self.player_list = arcade.SpriteList()
         self.wall_list = arcade.SpriteList()
+        self.coin_list = arcade.SpriteList()
 
 
         # Preparar al jugador
@@ -78,6 +84,11 @@ class MyGame(arcade.Window):
         wall.center_x = 250
         wall.center_y = 550
         self.wall_list.append(wall)
+
+        coin = arcade.Sprite(f"{ROUTE_SPRITES}/{COIN_SPRITE_NAME}", SPRITE_SCALING / 2)
+        coin.center_x = 300
+        coin.center_y = 200
+        self.coin_list.append(coin)
 
         # Elegir el motor de físicas a usar
         self.physics_engine = arcade.PhysicsEngineSimple(self.player_sprite, self.wall_list)  # arcade.PhysicsEngine
@@ -99,6 +110,11 @@ class MyGame(arcade.Window):
         # Dibujar Sprites
         self.player_list.draw()
         self.wall_list.draw()
+        self.coin_list.draw()
+
+        # Dibujar el puntaje
+        output = f"Puntaje: {self.score}"
+        arcade.draw_text(output, 10, 20, arcade.color.WHITE, 14)
 
         # Seleccionar la cámara inmóvil para GUI
         self.camera_gui.use()
@@ -148,6 +164,13 @@ class MyGame(arcade.Window):
             self.player_sprite.change_x = -PLAYER_MOVEMENT_SPEED
         elif self.right_pressed and not self.left_pressed:
             self.player_sprite.change_x = PLAYER_MOVEMENT_SPEED
+
+        # Ver si el player choca con una moneda
+        coins_hit_list = arcade.check_for_collision_with_list(self.player_sprite, self.coin_list)
+        # Revisar lista de hits y eliminar de la lista cada moneda chocada, y sumar 1 al puntaje
+        for coin in coins_hit_list:
+            coin.remove_from_sprite_lists()
+            self.score += 1
 
         # Actualizar todos los sprites
         self.physics_engine.update()

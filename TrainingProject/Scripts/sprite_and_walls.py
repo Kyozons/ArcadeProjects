@@ -11,7 +11,7 @@ TITLE = "Sprite and Walls"
 SPRITE_SCALING_PLAYER = 0.5
 SPRITE_SCALING_BOX = 0.5
 
-MOVEMENT_SPEED = 5
+PLAYER_MOVEMENT_SPEED = 5
 
 class MyGame(arcade.Window):
     """ Clase Window custom"""
@@ -29,6 +29,12 @@ class MyGame(arcade.Window):
 
         # Motor de fisicas
         self.physics_engine = None
+
+        # Llevar seguimiento de las teclas persionadas
+        self.left_pressed = False
+        self.right_pressed = False
+        self.up_pressed = False
+        self.down_pressed = False
 
         # Crear Cámaras, una para la GUI
         # Y la otra para los Sprites
@@ -100,11 +106,52 @@ class MyGame(arcade.Window):
         self.camera_for_gui.use()
         arcade.draw_text(f"Puntaje: {self.score}", 10, 10, arcade.color.WHITE, 24)
 
+    def on_key_press(self, key, modifiers):
+        """ Se llama cada vez que se presiona una tecla"""
+
+        if key == arcade.key.W:
+            self.up_pressed = True
+        elif key == arcade.key.S:
+            self.down_pressed = True
+        elif key == arcade.key.A:
+            self.left_pressed = True
+        elif key == arcade.key.D:
+            self.right_pressed = True
+
+        if key == arcade.key.ESCAPE:
+            arcade.exit()
+
+    def on_key_release(self, key, modifiers):
+        """ Se llama cuando se suelta una tecla"""
+
+        if key == arcade.key.W:
+            self.up_pressed = False
+        elif key == arcade.key.S:
+            self.down_pressed = False
+        elif key == arcade.key.A:
+            self.left_pressed = False
+        elif key == arcade.key.D:
+            self.right_pressed = False
+
     def on_update(self, delta_time):
         """ Movimiento y lógica del juego"""
 
         # Actualiza todos los sprite
         self.physics_engine.update()
+
+
+        # Movimiento del jugador
+        self.player_sprite.change_x = 0
+        self.player_sprite.change_y = 0
+
+        if self.up_pressed and not self.down_pressed:
+            self.player_sprite.change_y = PLAYER_MOVEMENT_SPEED
+        elif self.down_pressed and not self.up_pressed:
+            self.player_sprite.change_y = -PLAYER_MOVEMENT_SPEED
+        if self.left_pressed and not self.right_pressed:
+            self.player_sprite.change_x = -PLAYER_MOVEMENT_SPEED
+        elif self.right_pressed and not self.left_pressed:
+            self.player_sprite.change_x = PLAYER_MOVEMENT_SPEED
 
 
         # Mueve la ventana al jugador
@@ -115,28 +162,6 @@ class MyGame(arcade.Window):
         lower_left_corner = (self.player_sprite.center_x - self.width / 2, self.player_sprite.center_y - self.height / 2)
         self.camera_for_sprites.move_to(lower_left_corner, CAMERA_SPEED)
 
-    def on_key_press(self, key, modifiers):
-        """ Se llama cada vez que se presiona una tecla"""
-
-        if key == arcade.key.W:
-            self.player_sprite.change_y = MOVEMENT_SPEED
-        elif key == arcade.key.S:
-            self.player_sprite.change_y = -MOVEMENT_SPEED
-        elif key == arcade.key.A:
-            self.player_sprite.change_x = -MOVEMENT_SPEED
-        elif key == arcade.key.D:
-            self.player_sprite.change_x = MOVEMENT_SPEED
-
-        if key == arcade.key.ESCAPE:
-            arcade.exit()
-
-    def on_key_release(self, key, modifiers):
-        """ Se llama cuando se suelta una tecla"""
-
-        if key == arcade.key.W or key == arcade.key.S:
-            self.player_sprite.change_y = 0
-        elif key == arcade.key.A or key == arcade.key.D:
-            self.player_sprite.change_x = 0
 
 def main():
     """ Metodo principal"""
